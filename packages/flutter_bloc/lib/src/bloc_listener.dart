@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import 'bloc_provider.dart';
@@ -84,19 +83,23 @@ class BlocListener<C extends Cubit<S>, S> extends BlocListenerBase<C, S>
     with BlocListenerSingleChildWidget {
   /// {@macro bloc_listener}
   const BlocListener({
-    Key key,
-    @required BlocWidgetListener<S> listener,
-    C cubit,
-    BlocListenerCondition<S> listenWhen,
-    Widget child,
-  })  : assert(listener != null),
-        super(
+    Key? key,
+    required BlocWidgetListener<S> listener,
+    C? cubit,
+    BlocListenerCondition<S>? listenWhen,
+    required this.child,
+  }) : super(
           key: key,
           child: child,
           listener: listener,
           cubit: cubit,
           listenWhen: listenWhen,
         );
+
+  /// The widget which will be rendered as a descendant of the [BlocListener].
+  @override
+  // ignore: overridden_fields
+  final Widget child;
 }
 
 /// {@template bloc_listener_base}
@@ -110,10 +113,10 @@ abstract class BlocListenerBase<C extends Cubit<S>, S>
     extends SingleChildStatefulWidget {
   /// {@macro bloc_listener_base}
   const BlocListenerBase({
-    Key key,
+    Key? key,
     this.listener,
     this.cubit,
-    this.child,
+    required this.child,
     this.listenWhen,
   }) : super(key: key, child: child);
 
@@ -123,15 +126,15 @@ abstract class BlocListenerBase<C extends Cubit<S>, S>
 
   /// The [cubit] whose `state` will be listened to.
   /// Whenever the [cubit]'s `state` changes, [listener] will be invoked.
-  final C cubit;
+  final C? cubit;
 
   /// The [BlocWidgetListener] which will be called on every `state` change.
   /// This [listener] should be used for any code which needs to execute
   /// in response to a `state` change.
-  final BlocWidgetListener<S> listener;
+  final BlocWidgetListener<S>? listener;
 
   /// {@macro bloc_listener_listen_when}
-  final BlocListenerCondition<S> listenWhen;
+  final BlocListenerCondition<S>? listenWhen;
 
   @override
   SingleChildState<BlocListenerBase<C, S>> createState() =>
@@ -140,35 +143,36 @@ abstract class BlocListenerBase<C extends Cubit<S>, S>
 
 class _BlocListenerBaseState<C extends Cubit<S>, S>
     extends SingleChildState<BlocListenerBase<C, S>> {
-  StreamSubscription<S> _subscription;
-  S _previousState;
-  C _cubit;
+  StreamSubscription<S>? _subscription;
+  late S _previousState;
+  C? _cubit;
 
   @override
   void initState() {
     super.initState();
-    _cubit = widget.cubit ?? context.read<C>();
-    _previousState = _cubit.state;
+    _cubit = widget.cubit ?? context.bloc<C>();
+    _previousState = _cubit!.state;
     _subscribe();
   }
 
   @override
   void didUpdateWidget(BlocListenerBase<C, S> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final oldCubit = oldWidget.cubit ?? context.read<C>();
+    final oldCubit = oldWidget.cubit ?? context.bloc<C>();
     final currentCubit = widget.cubit ?? oldCubit;
     if (oldCubit != currentCubit) {
       if (_subscription != null) {
         _unsubscribe();
         _cubit = currentCubit;
-        _previousState = _cubit.state;
+        _previousState = _cubit!.state;
       }
       _subscribe();
     }
   }
 
   @override
-  Widget buildWithChild(BuildContext context, Widget child) => child;
+  Widget buildWithChild(BuildContext context, Widget? child) =>
+      child ?? Container();
 
   @override
   void dispose() {
@@ -178,9 +182,9 @@ class _BlocListenerBaseState<C extends Cubit<S>, S>
 
   void _subscribe() {
     if (_cubit != null) {
-      _subscription = _cubit.listen((state) {
+      _subscription = _cubit!.listen((state) {
         if (widget.listenWhen?.call(_previousState, state) ?? true) {
-          widget.listener(context, state);
+          widget.listener!(context, state);
         }
         _previousState = state;
       });
@@ -188,9 +192,7 @@ class _BlocListenerBaseState<C extends Cubit<S>, S>
   }
 
   void _unsubscribe() {
-    if (_subscription != null) {
-      _subscription.cancel();
-      _subscription = null;
-    }
+    _subscription?.cancel();
+    _subscription = null;
   }
 }

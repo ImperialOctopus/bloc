@@ -26,7 +26,7 @@ Widgets that make it easy to integrate blocs and cubits into [Flutter](https://f
 
 **Learn more at [bloclibrary.dev](https://bloclibrary.dev)!**
 
-_\*Note: All widgets exported by the `flutter_bloc` package integrate with both `Cubit` and `Bloc` instances._
+_*Note: All widgets exported by the `flutter_bloc` package integrate with both `Cubit` and `Bloc` instances._
 
 ## Usage
 
@@ -62,14 +62,14 @@ class CounterPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5.0),
             child: FloatingActionButton(
               child: const Icon(Icons.add),
-              onPressed: () => context.read<CounterCubit>().increment(),
+              onPressed: () => context.bloc<CounterCubit>().increment(),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5.0),
             child: FloatingActionButton(
               child: const Icon(Icons.remove),
-              onPressed: () => context.read<CounterCubit>().decrement(),
+              onPressed: () => context.bloc<CounterCubit>().decrement(),
             ),
           ),
         ],
@@ -82,8 +82,6 @@ class CounterPage extends StatelessWidget {
 At this point we have successfully separated our presentational layer from our business logic layer. Notice that the `CounterPage` widget knows nothing about what happens when a user taps the buttons. The widget simply tells the `CounterCubit` that the user has pressed either the increment or decrement button.
 
 ## Bloc Widgets
-
-### BlocBuilder
 
 **BlocBuilder** is a Flutter widget which requires a `cubit` and a `builder` function. `BlocBuilder` handles building the widget in response to new states. `BlocBuilder` is very similar to `StreamBuilder` but has a more simple API to reduce the amount of boilerplate code needed. The `builder` function will potentially be called many times and should be a [pure function](https://en.wikipedia.org/wiki/Pure_function) that returns a widget in response to the state.
 
@@ -124,8 +122,6 @@ BlocBuilder<BlocA, BlocAState>(
 )
 ```
 
-### BlocProvider
-
 **BlocProvider** is a Flutter widget which provides a cubit to its children via `BlocProvider.of<T>(context)`. It is used as a dependency injection (DI) widget so that a single instance of a cubit can be provided to multiple widgets within a subtree.
 
 In most cases, `BlocProvider` should be used to create new cubits which will be made available to the rest of the subtree. In this case, since `BlocProvider` is responsible for creating the cubit, it will automatically handle closing it.
@@ -162,31 +158,11 @@ then from either `ChildA`, or `ScreenA` we can retrieve `BlocA` with:
 
 ```dart
 // with extensions
-context.read<BlocA>();
+context.bloc<BlocA>();
 
 // without extensions
-BlocProvider.of<BlocA>(context);
+BlocProvider.of<BlocA>(context)
 ```
-
-The above snippets result in a one time lookup and the widget will not be notified of changes. To retrieve the instance and subscribe to subsequent state changes use:
-
-```dart
-// with extensions
-context.watch<BlocA>();
-
-// without extensions
-BlocProvider.of<BlocA>(context, listen: true);
-```
-
-In addition, `context.select` can be used to retrieve part of a state and react to changes only when the selected part changes.
-
-```dart
-final isPositive = context.select((CounterBloc b) => b.state >= 0);
-```
-
-The snippet above will only rebuild if the state of the `CounterBloc` changes from positive to negative or vice versa.
-
-### MultiBlocProvider
 
 **MultiBlocProvider** is a Flutter widget that merges multiple `BlocProvider` widgets into one.
 `MultiBlocProvider` improves the readability and eliminates the need to nest multiple `BlocProviders`.
@@ -223,8 +199,6 @@ MultiBlocProvider(
   child: ChildA(),
 )
 ```
-
-### BlocListener
 
 **BlocListener** is a Flutter widget which takes a `BlocWidgetListener` and an optional `cubit` and invokes the `listener` in response to state changes in the cubit. It should be used for functionality that needs to occur once per state change such as navigation, showing a `SnackBar`, showing a `Dialog`, etc...
 
@@ -267,8 +241,6 @@ BlocListener<BlocA, BlocAState>(
 )
 ```
 
-### MultiBlocListener
-
 **MultiBlocListener** is a Flutter widget that merges multiple `BlocListener` widgets into one.
 `MultiBlocListener` improves the readability and eliminates the need to nest multiple `BlocListeners`.
 By using `MultiBlocListener` we can go from:
@@ -304,8 +276,6 @@ MultiBlocListener(
   child: ChildA(),
 )
 ```
-
-### BlocConsumer
 
 **BlocConsumer** exposes a `builder` and `listener` in order react to new states. `BlocConsumer` is analogous to a nested `BlocListener` and `BlocBuilder` but reduces the amount of boilerplate needed. `BlocConsumer` should only be used when it is necessary to both rebuild UI and execute other reactions to state changes in the `cubit`. `BlocConsumer` takes a required `BlocWidgetBuilder` and `BlocWidgetListener` and an optional `cubit`, `BlocBuilderCondition`, and `BlocListenerCondition`.
 
@@ -344,8 +314,6 @@ BlocConsumer<BlocA, BlocAState>(
 )
 ```
 
-### RepositoryProvider
-
 **RepositoryProvider** is a Flutter widget which provides a repository to its children via `RepositoryProvider.of<T>(context)`. It is used as a dependency injection (DI) widget so that a single instance of a repository can be provided to multiple widgets within a subtree. `BlocProvider` should be used to provide blocs whereas `RepositoryProvider` should only be used for repositories.
 
 ```dart
@@ -359,13 +327,11 @@ then from `ChildA` we can retrieve the `Repository` instance with:
 
 ```dart
 // with extensions
-context.read<RepositoryA>();
+context.repository<RepositoryA>();
 
 // without extensions
 RepositoryProvider.of<RepositoryA>(context)
 ```
-
-### MultiRepositoryProvider
 
 **MultiRepositoryProvider** is a Flutter widget that merges multiple `RepositoryProvider` widgets into one.
 `MultiRepositoryProvider` improves the readability and eliminates the need to nest multiple `RepositoryProvider`.
@@ -449,7 +415,6 @@ MultiRepositoryProvider(
 - [Counter](https://bloclibrary.dev/#/fluttercountertutorial) - an example of how to create a `CounterBloc` to implement the classic Flutter Counter app.
 - [Form Validation](https://github.com/felangel/bloc/tree/master/examples/flutter_form_validation) - an example of how to use the `bloc` and `flutter_bloc` packages to implement form validation.
 - [Bloc with Stream](https://github.com/felangel/bloc/tree/master/examples/flutter_bloc_with_stream) - an example of how to hook up a `bloc` to a `Stream` and update the UI in response to data from the `Stream`.
-- [Complex List](https://github.com/felangel/bloc/tree/master/examples/flutter_complex_list) - an example of how to manage a list of items and asynchronously delete items one at a time using `bloc` and `flutter_bloc`.
 - [Infinite List](https://bloclibrary.dev/#/flutterinfinitelisttutorial) - an example of how to use the `bloc` and `flutter_bloc` packages to implement an infinite scrolling list.
 - [Login Flow](https://bloclibrary.dev/#/flutterlogintutorial) - an example of how to use the `bloc` and `flutter_bloc` packages to implement a Login Flow.
 - [Firebase Login](https://bloclibrary.dev/#/flutterfirebaselogintutorial) - an example of how to use the `bloc` and `flutter_bloc` packages to implement login via Firebase.
@@ -460,9 +425,6 @@ MultiRepositoryProvider(
 - [Firestore Todos](https://bloclibrary.dev/#/flutterfirestoretodostutorial) - an example of how to create a Todos Application using the `bloc` and `flutter_bloc` packages that integrates with cloud firestore.
 - [Shopping Cart](https://github.com/felangel/bloc/tree/master/examples/flutter_shopping_cart) - an example of how to create a Shopping Cart Application using the `bloc` and `flutter_bloc` packages based on [flutter samples](https://github.com/flutter/samples/tree/master/provider_shopper).
 - [Dynamic Form](https://github.com/felangel/bloc/tree/master/examples/flutter_dynamic_form) - an example of how to use the `bloc` and `flutter_bloc` packages to implement a dynamic form which pulls data from a repository.
-- [Wizard](https://github.com/felangel/bloc/tree/master/examples/flutter_wizard) - an example of how to build a multi-step wizard using the `bloc` and `flutter_bloc` packages.
-- [GraphQL](https://github.com/felangel/bloc/tree/master/examples/flutter_graphql_jobs) - an example of how to use the `bloc` and `flutter_bloc` packages with `graphql` to retrieve data from [api.graphql.jobs](https://api.graphql.jobs).
-- [Fluttersaurus](https://github.com/felangel/fluttersaurus) - an example of how to use the `bloc` and `flutter_bloc` packages to create a thesuarus app -- made for Bytconf Flutter 2020.
 
 ## Dart Versions
 

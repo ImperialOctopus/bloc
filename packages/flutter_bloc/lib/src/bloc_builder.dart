@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 
 import 'bloc_listener.dart';
 import 'bloc_provider.dart';
@@ -76,12 +75,11 @@ typedef BlocBuilderCondition<S> = bool Function(S previous, S current);
 class BlocBuilder<C extends Cubit<S>, S> extends BlocBuilderBase<C, S> {
   /// {@macro bloc_builder}
   const BlocBuilder({
-    Key key,
-    @required this.builder,
-    C cubit,
-    BlocBuilderCondition<S> buildWhen,
-  })  : assert(builder != null),
-        super(key: key, cubit: cubit, buildWhen: buildWhen);
+    Key? key,
+    required this.builder,
+    C? cubit,
+    BlocBuilderCondition<S>? buildWhen,
+  }) : super(key: key, cubit: cubit, buildWhen: buildWhen);
 
   /// The [builder] function which will be invoked on each widget build.
   /// The [builder] takes the `BuildContext` and current `state` and
@@ -103,16 +101,16 @@ class BlocBuilder<C extends Cubit<S>, S> extends BlocBuilderBase<C, S> {
 /// {@endtemplate}
 abstract class BlocBuilderBase<C extends Cubit<S>, S> extends StatefulWidget {
   /// {@macro bloc_builder_base}
-  const BlocBuilderBase({Key key, this.cubit, this.buildWhen})
+  const BlocBuilderBase({Key? key, this.cubit, this.buildWhen})
       : super(key: key);
 
   /// The [cubit] that the [BlocBuilderBase] will interact with.
   /// If omitted, [BlocBuilderBase] will automatically perform a lookup using
   /// [BlocProvider] and the current `BuildContext`.
-  final C cubit;
+  final C? cubit;
 
   /// {@macro bloc_builder_build_when}
-  final BlocBuilderCondition<S> buildWhen;
+  final BlocBuilderCondition<S>? buildWhen;
 
   /// Returns a widget based on the `BuildContext` and current [state].
   Widget build(BuildContext context, S state);
@@ -123,20 +121,20 @@ abstract class BlocBuilderBase<C extends Cubit<S>, S> extends StatefulWidget {
 
 class _BlocBuilderBaseState<C extends Cubit<S>, S>
     extends State<BlocBuilderBase<C, S>> {
-  C _cubit;
-  S _state;
+  late C _cubit;
+  late S _state;
 
   @override
   void initState() {
     super.initState();
-    _cubit = widget.cubit ?? context.read<C>();
+    _cubit = widget.cubit ?? context.bloc<C>();
     _state = _cubit.state;
   }
 
   @override
   void didUpdateWidget(BlocBuilderBase<C, S> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final oldCubit = oldWidget.cubit ?? context.read<C>();
+    final oldCubit = oldWidget.cubit ?? context.bloc<C>();
     final currentCubit = widget.cubit ?? oldCubit;
     if (oldCubit != currentCubit) {
       _cubit = currentCubit;

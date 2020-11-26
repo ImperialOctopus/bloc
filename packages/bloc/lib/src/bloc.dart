@@ -27,7 +27,7 @@ abstract class Bloc<Event, State> extends Cubit<State>
 
   final _eventController = StreamController<Event>.broadcast();
 
-  StreamSubscription<Transition<Event, State>> _transitionSubscription;
+  late StreamSubscription<Transition<Event, State>> _transitionSubscription;
 
   bool _emitted = false;
 
@@ -40,7 +40,7 @@ abstract class Bloc<Event, State> extends Cubit<State>
     try {
       onEvent(event);
       _eventController.add(event);
-    } on dynamic catch (error, stackTrace) {
+    } catch (error, stackTrace) {
       onError(error, stackTrace);
     }
   }
@@ -48,14 +48,14 @@ abstract class Bloc<Event, State> extends Cubit<State>
   /// Called whenever an [event] is [add]ed to the [Bloc].
   /// A great spot to add logging/analytics at the individual [Bloc] level.
   ///
-  /// **Note: `super.onEvent` should always be called first.**
+  /// **Note: `super.onEvent` should always be called last.**
   /// ```dart
   /// @override
   /// void onEvent(Event event) {
+  ///   // Custom onEvent logic goes here
+  ///
   ///   // Always call super.onEvent with the current event
   ///   super.onEvent(event);
-  ///
-  ///   // Custom onEvent logic goes here
   /// }
   /// ```
   ///
@@ -144,14 +144,14 @@ abstract class Bloc<Event, State> extends Cubit<State>
   /// [onTransition] is called before a [Bloc]'s [state] has been updated.
   /// A great spot to add logging/analytics at the individual [Bloc] level.
   ///
-  /// **Note: `super.onTransition` should always be called first.**
+  /// **Note: `super.onTransition` should always be called last.**
   /// ```dart
   /// @override
   /// void onTransition(Transition<Event, State> transition) {
+  ///   // Custom onTransition logic goes here
+  ///
   ///   // Always call super.onTransition with the current transition
   ///   super.onTransition(transition);
-  ///
-  ///   // Custom onTransition logic goes here
   /// }
   /// ```
   ///
@@ -168,15 +168,13 @@ abstract class Bloc<Event, State> extends Cubit<State>
 
   /// Notifies the [Bloc] of an [error] which triggers [onError].
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
-    onError(error, stackTrace);
+  void addError(Object error, [StackTrace? stackTrace]) {
+    onError(error, stackTrace ?? StackTrace.current);
   }
 
   /// Called whenever an [error] is thrown within [mapEventToState].
   /// By default all [error]s will be ignored and [Bloc] functionality will be
   /// unaffected.
-  /// The [stackTrace] argument may be `null` if the [state] stream received
-  /// an error without a [stackTrace].
   /// A great spot to handle errors at the individual [Bloc] level.
   ///
   /// **Note: `super.onError` should always be called last.**
@@ -211,14 +209,14 @@ abstract class Bloc<Event, State> extends Cubit<State>
   @mustCallSuper
   Future<void> close() async {
     await _eventController.close();
-    await _transitionSubscription?.cancel();
+    await _transitionSubscription.cancel();
     return super.close();
   }
 
   /// **[emit] should never be used outside of tests.**
   ///
   /// Updates the state of the bloc to the provided [state].
-  /// A bloc's state should only be updated by `yielding` a new `state`
+  /// A bloc's state should be only be updated by `yielding` a new `state`
   /// from `mapEventToState` in response to an event.
   @visibleForTesting
   @override
@@ -242,7 +240,7 @@ abstract class Bloc<Event, State> extends Cubit<State>
         try {
           onTransition(transition);
           emit(transition.nextState);
-        } on dynamic catch (error, stackTrace) {
+        } catch (error, stackTrace) {
           onError(error, stackTrace);
         }
         _emitted = true;

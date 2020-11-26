@@ -1,9 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 
-import 'bloc_builder.dart';
-import 'bloc_listener.dart';
+import '../flutter_bloc.dart';
 
 /// {@template bloc_consumer}
 /// [BlocConsumer] exposes a [builder] and [listener] in order react to new
@@ -62,23 +60,21 @@ import 'bloc_listener.dart';
 /// )
 /// ```
 /// {@endtemplate}
-class BlocConsumer<C extends Cubit<S>, S> extends StatefulWidget {
+class BlocConsumer<C extends Cubit<S>, S> extends StatelessWidget {
   /// {@macro bloc_consumer}
   const BlocConsumer({
-    Key key,
-    @required this.builder,
-    @required this.listener,
+    Key? key,
+    required this.builder,
+    required this.listener,
     this.cubit,
     this.buildWhen,
     this.listenWhen,
-  })  : assert(builder != null),
-        assert(listener != null),
-        super(key: key);
+  }) : super(key: key);
 
   /// The [cubit] that the [BlocConsumer] will interact with.
   /// If omitted, [BlocConsumer] will automatically perform a lookup using
   /// `BlocProvider` and the current `BuildContext`.
-  final C cubit;
+  final C? cubit;
 
   /// The [builder] function which will be invoked on each widget build.
   /// The [builder] takes the `BuildContext` and current `state` and
@@ -93,47 +89,24 @@ class BlocConsumer<C extends Cubit<S>, S> extends StatefulWidget {
   /// Takes the previous `state` and the current `state` and is responsible for
   /// returning a [bool] which determines whether or not to trigger
   /// [builder] with the current `state`.
-  final BlocBuilderCondition<S> buildWhen;
+  final BlocBuilderCondition<S>? buildWhen;
 
   /// Takes the previous `state` and the current `state` and is responsible for
   /// returning a [bool] which determines whether or not to call [listener] of
   /// [BlocConsumer] with the current `state`.
-  final BlocListenerCondition<S> listenWhen;
-
-  @override
-  State<BlocConsumer<C, S>> createState() => _BlocConsumerState<C, S>();
-}
-
-class _BlocConsumerState<C extends Cubit<S>, S>
-    extends State<BlocConsumer<C, S>> {
-  C _cubit;
-
-  @override
-  void initState() {
-    super.initState();
-    _cubit = widget.cubit ?? context.read<C>();
-  }
-
-  @override
-  void didUpdateWidget(BlocConsumer<C, S> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final oldCubit = oldWidget.cubit ?? context.read<C>();
-    final currentCubit = widget.cubit ?? oldCubit;
-    if (oldCubit != currentCubit) {
-      _cubit = currentCubit;
-    }
-  }
+  final BlocListenerCondition<S>? listenWhen;
 
   @override
   Widget build(BuildContext context) {
+    final cubit = this.cubit ?? context.bloc<C>();
     return BlocBuilder<C, S>(
-      cubit: _cubit,
-      builder: widget.builder,
+      cubit: cubit,
+      builder: builder,
       buildWhen: (previous, current) {
-        if (widget.listenWhen?.call(previous, current) ?? true) {
-          widget.listener(context, current);
+        if (listenWhen?.call(previous, current) ?? true) {
+          listener(context, current);
         }
-        return widget.buildWhen?.call(previous, current) ?? true;
+        return buildWhen?.call(previous, current) ?? true;
       },
     );
   }
