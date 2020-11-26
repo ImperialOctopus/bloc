@@ -1,32 +1,6 @@
-<p align="center">
-<img src="https://raw.githubusercontent.com/felangel/bloc/master/docs/assets/bloc_logo_full.png" height="100" alt="Bloc" />
-</p>
+## Null Safety Patch
 
-<p align="center">
-<a href="https://github.com/felangel/bloc/actions"><img src="https://github.com/felangel/bloc/workflows/build/badge.svg" alt="build"></a>
-<a href="https://codecov.io/gh/felangel/bloc"><img src="https://codecov.io/gh/felangel/Bloc/branch/master/graph/badge.svg" alt="codecov"></a>
-<a href="https://github.com/felangel/bloc"><img src="https://img.shields.io/github/stars/felangel/bloc.svg?style=flat&logo=github&colorB=deeppink&label=stars" alt="Star on Github"></a>
-<a href="https://github.com/tenhobi/effective_dart"><img src="https://img.shields.io/badge/style-effective_dart-40c4ff.svg" alt="style: effective dart"></a>
-<a href="https://flutter.dev/docs/development/data-and-backend/state-mgmt/options#bloc--rx"><img src="https://img.shields.io/badge/flutter-website-deepskyblue.svg" alt="Flutter Website"></a>
-<a href="https://github.com/Solido/awesome-flutter#standard"><img src="https://img.shields.io/badge/awesome-flutter-blue.svg?longCache=true" alt="Awesome Flutter"></a>
-<a href="http://fluttersamples.com"><img src="https://img.shields.io/badge/flutter-samples-teal.svg?longCache=true" alt="Flutter Samples"></a>
-<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
-<a href="https://discord.gg/Hc5KD3g"><img src="https://img.shields.io/discord/649708778631200778.svg?logo=discord&color=blue" alt="Discord"></a>
-<a href="https://github.com/felangel/bloc"><img src="https://tinyurl.com/bloc-library" alt="Bloc Library"></a>
-</p>
-
----
-
-A predictable state management library that helps implement the [BLoC design pattern](https://www.didierboelens.com/2018/08/reactive-programming---streams---bloc).
-
-| Package                                                                              | Pub                                                                                                      |
-| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| [bloc](https://github.com/felangel/bloc/tree/master/packages/bloc)                   | [![pub package](https://img.shields.io/pub/v/bloc.svg)](https://pub.dev/packages/bloc)                   |
-| [bloc_test](https://github.com/felangel/bloc/tree/master/packages/bloc_test)         | [![pub package](https://img.shields.io/pub/v/bloc_test.svg)](https://pub.dev/packages/bloc_test)         |
-| [flutter_bloc](https://github.com/felangel/bloc/tree/master/packages/flutter_bloc)   | [![pub package](https://img.shields.io/pub/v/flutter_bloc.svg)](https://pub.dev/packages/flutter_bloc)   |
-| [angular_bloc](https://github.com/felangel/bloc/tree/master/packages/angular_bloc)   | [![pub package](https://img.shields.io/pub/v/angular_bloc.svg)](https://pub.dev/packages/angular_bloc)   |
-| [hydrated_bloc](https://github.com/felangel/bloc/tree/master/packages/hydrated_bloc) | [![pub package](https://img.shields.io/pub/v/hydrated_bloc.svg)](https://pub.dev/packages/hydrated_bloc) |
-| [replay_bloc](https://github.com/felangel/bloc/tree/master/packages/replay_bloc)     | [![pub package](https://img.shields.io/pub/v/replay_bloc.svg)](https://pub.dev/packages/replay_bloc)     |
+This repository contains only the bloc and flutter_bloc packages patched to support null safety before migration of the original repository is complete.
 
 ## Overview
 
@@ -136,7 +110,7 @@ The goal of this library is to make it easy to separate _presentation_ from _bus
 
 ## Books
 
-  - [Flutter Complete Reference](https://fluttercompletereference.com/) - A book about the Dart programming language (version 2.10, with null safety support) and the Flutter framework (version 1.20). It covers the bloc package (version 6.0.3) in all flavors: bloc, flutter_bloc hydrated_bloc, replay_bloc, bloc_test and cubit.
+- [Flutter Complete Reference](https://fluttercompletereference.com/) - A book about the Dart programming language (version 2.10, with null safety support) and the Flutter framework (version 1.20). It covers the bloc package (version 6.0.3) in all flavors: bloc, flutter_bloc hydrated_bloc, replay_bloc, bloc_test and cubit.
 
 ## Extensions
 
