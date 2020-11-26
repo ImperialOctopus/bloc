@@ -15,9 +15,12 @@ dependencies:
   flutter:
     sdk: flutter
   bloc:
-    path: ../bloc
+    git:
+      url: git://github.com/ImperialOctopus/bloc.git
+      path: packages/bloc
   provider:
-    path: ../provider
+    git:
+      url: git://github.com/ImperialOctopus/provider.git
 
 dev_dependencies:
   flutter_test:
